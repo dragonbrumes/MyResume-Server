@@ -2,9 +2,10 @@
 
 // Import experiences model
 Experiences = require("../models/experiencesModel");
-// Handle index actions
-exports.index = function(req, res) {
-  Experiences.get(function(err, Experiences) {
+
+// Handle viewAll actions (Read)
+exports.viewAll = function(req, res) {
+  Experiences.find(function(err, experiences) {
     if (err) {
       res.json({
         status: "error",
@@ -14,7 +15,23 @@ exports.index = function(req, res) {
     res.json({
       status: "success",
       message: "Experiences retrieved successfully",
-      data: Experiences
+      data: experiences
+    });
+  }).sort({ order: "desc" });
+};
+// Handle index actions (Read)
+exports.index = function(req, res) {
+  Experiences.get(function(err, experiences) {
+    if (err) {
+      res.json({
+        status: "error",
+        message: err
+      });
+    }
+    res.json({
+      status: "success",
+      message: "Experiences retrieved successfully",
+      data: experiences
     });
   });
 };
@@ -31,12 +48,18 @@ exports.new = function(req, res) {
   experiences.save(function(err) {
     if (err) {
       res.json(err);
+      // res.status("204").json({ err, insert: "ko" });
       console.log(err);
+    } else {
+      res.json({
+        insert: "ok",
+        message: "New Experiences created!",
+        data: experiences
+      });
     }
-    res.json({ message: "New Experiences created!", data: experiences });
   });
 };
-// Handle view Experiences info
+// Handle view One Experiences info
 exports.view = function(req, res) {
   Experiences.findById(req.params.Experiences_id, function(err, experiences) {
     if (err) res.send(err);
